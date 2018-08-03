@@ -17,7 +17,7 @@ const hexToUint8Array = (input) => {
 const checksum = (hexInput) => {
 	const input = removeHeader(hexInput).toLowerCase();
 	const hashed = blake.blake2b(hexToUint8Array(hexInput), null, 32);
-	console.log(hashed);
+	console.log(byteToHexString(hashed));
 	// probably a more javascript-esque way to do this
 	let checksummed = "";
 	for (let k = 0; k < input.length; k++) {
@@ -28,15 +28,30 @@ const checksum = (hexInput) => {
 		}
 		// otherwise its a alphabetical character
 		checksummed += bit(hashed, k) === 0x1 ? c.toUpperCase() : c;
-		console.log(checksummed);
 	}
+	return checksummed;
 }
 
 const bit = (arr, index) => {
 	const byteOffset = Math.floor(index / 8);
 	const bitOffset = index % 8;
 	const uint8 = arr[byteOffset];
-	return (uint8 >> (7 - bitOffset)) & 0x1;
+	return (uint8 >> (bitOffset)) & 0x1;
+}
+
+const byteToHexString = (uint8arr) => {
+  if (!uint8arr) {
+    return '';
+  }
+  
+  var hexStr = '';
+  for (var i = 0; i < uint8arr.length; i++) {
+    var hex = (uint8arr[i] & 0xff).toString(16);
+    hex = (hex.length === 1) ? '0' + hex : hex;
+    hexStr += hex;
+  }
+  
+  return hexStr.toUpperCase();
 }
 
 const addr = "0xa08896b9366f09e5efb1fa2ed9f3820b865ae97adbc6f364d691eb17784c9b1b";
